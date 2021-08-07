@@ -1,0 +1,81 @@
+---
+title: ""
+output:
+  pdf_document: default
+---
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+# Parte del código obtenido en https://aprender-uib.github.io/AprendeR1/chap-hist.html
+Tabla_frec_agrup=function(x,k,A,p){
+    L=min(x)-p/2+A*(0:k)
+    x_int=cut(x, breaks=L, right=FALSE)
+    intervalos=levels(x_int)
+    marcas=(L[1]+L[2])/2+A*(0:(k-1))
+    f.abs=as.vector(table(x_int))
+    f.rel=f.abs/length(x)
+    f.abs.cum=cumsum(f.abs)
+    f.rel.cum=cumsum(f.rel)
+    tabla_x=data.frame(intervalos, marcas, f.abs, f.abs.cum, f.rel, f.rel.cum)
+    tabla_x
+}
+
+ord_rango = function(data){
+    #data ordenada y por rango
+    df_ordenada <- data.frame(sort(data))
+    df_ordenada$rango <- rank(df_ordenada$sort.data.)
+    df_ordenada
+    
+}
+
+tabla_stats =function(data, bin){
+    Bin <- bin #Dato variable
+    Amplitud <- diff(range(data))/Bin
+    Tabla_frec_agrup(data,Bin,Amplitud,1)
+    
+} 
+
+grafica = function(data, bin){
+    data <- data.frame(data)
+    ggplot(data, aes(x=data))+geom_histogram(bins = Bin, fill="red")+geom_freqpoly(color="blue",bins=Bin)
+}
+
+```
+
+```{r}
+#Datos a utilizar
+data <- c(138,146,168,146,161,164,158,126,173,145,150,
+          140,138,142,135,132,147,176,147,142,144,136,
+          163,135,150,125,148,119,153,156,149,152,154,
+          140,145,157,144,165,135,128)
+```
+
+```{r}
+Bin <- 5
+#Data ordenada y por rango
+ord_rango(data)
+#Cuadro
+tabla_stats(data,Bin)
+#Gráfica 
+grafica(data,Bin)
+```
+
+
+
+
+12. EXTRA: Repita el ejercicio anterior sólo que ahora con $c=8$. ¿Notó algún cambio en los resultados?
+
+```{r}
+Bin <- 8
+#Data ordenada y por rango
+ord_rango(data)
+#Cuadro
+tabla_stats(data,Bin)
+#Gráfica 
+grafica(data,Bin)
+```
+
+\textbf{\textit{Solución}}. Los resultados parecen ser iguales, solamente poseen unas barras extras que hacen al gráfico más detallado; pero que en esencia son las mismas con las de $c=5$. 
