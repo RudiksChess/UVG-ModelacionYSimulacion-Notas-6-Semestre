@@ -1,0 +1,211 @@
+\documentclass[journal]{IEEEtran}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{cleveref}
+\usepackage{}
+\usepackage[spanish]{babel}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+\title{Teoría de Colas}
+
+
+\author{Rudik Rompich y David Cuellar \bigbreak \textit{Departamento de Computación, Modelación y Simulación,}\\ \textit{Universidad del Valle de Guatemala, Ciudad de Guatemala, Guatemala}\bigbreak 
+rom19857@uvg.edu.gt, cue18382@uvg.edu.gt}% <-this % stops a space
+
+
+\markboth{Teoría de Colas}%
+{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
+
+
+\maketitle
+
+\begin{abstract}
+	Las líneas o colas de espera comprenden un espectro cotidiano en la vida de las personas; las cuales se pueden encontrar en las compras del supermercado, los trámites burocráticos, la parada del autobús, la entrada a conciertos o discotecas, etcétera. En este proyecto se determinaron  los resultados de dos problemas: (1) Los tiempos de salida basado en diferentes arreglos y basado en dos listas de tiempos de llegada y de salida respectivamente.  (2) La comprobación y formulación de ecuaciones para determinar la igualdad entre la resta del tiempo de salida y el tiempo de servicio siendo directamente proporcional al máximo entre la hora de llegada y una lista de horas de salida basado en el número de servidores. 
+\end{abstract}
+
+\section{Introducción}
+
+\IEEEPARstart{L}{a} resolución de los problemas propuestos se analizaron desde las perspectivas teóricas y prácticas. La metodología usada se basó en: (1) Creación de algoritmos de simulación. (2) Determinación y comprobación de las ecuaciones a través de la experimentación directa con un servidor y con dos servidores independientes. El desarrollo del proyecto consistió en el uso de un lenguaje de programación (\textit{python}) y un programa de hojas de cálculo (\textit{excel}). Finalmente, en el proyecto se comprobó y se determinó una ecuación que puede ser generalizada a $k$ servidores en una línea de espera. 
+
+\section{Desarrollo de contenidos}
+
+\subsection{Problemas 1.a, 1.b y 2.d}
+La resolución de esta parte se llevó a cabo totalmente en \textit{Python}. El problema otorga trece datos de tiempos de llegada y de servicio. 
+
+
+\begin{lstlisting}[language=Python, label={code:1}, caption=Tiempos de llegada y de servicio.]
+	ensayos = 13
+	tiempo_de_llegadas = [12,31,63,95,99,154,198,221,304,346,411,455,537]
+	tiempo_de_servicio = [40,32,55,48,18,50,47,18,28,54,40,72,12]
+\end{lstlisting}
+
+Ahora bien, nótese que los tiempos de llegada de \cref{code:1} presentan los tiempos ya ordenados. Sin embargo, el algoritmo desarrollado exige que únicamente se den los tiempos entre llegadas en bruto. Las distribuciones que pueden ser utilizadas en el algoritmo pueden ser encontradas en \cite{wackerly2014mathematical}. A continuación se presenta el algoritmo para quitarles el orden a los tiempos de llegada. 
+\begin{lstlisting}[language=Python,label={code:2}, caption=Casos tiempos de llegada]
+	# Casos 
+	caso_a_b= [tiempo_de_llegadas[0]]
+	caso_c = []
+	for i in range(1,len(tiempo_de_llegadas)):
+		elemento =  tiempo_de_llegadas[i] - tiempo_de_llegadas[i-1] 
+		caso_a_b.append(elemento)
+		caso_c.append(elemento)
+	caso_c.sort(reverse=False)
+	caso_c.insert(0,tiempo_de_llegadas[0])
+\end{lstlisting}
+
+Para modelar el primero de los casos, únicamente se asigna la variable para los tiempos entre llegadas. 
+\begin{lstlisting}[language=Python, label={code:3}, caption=Caso a y Caso b]
+	tiempo_entre_llegada= caso_a_b
+\end{lstlisting}
+
+Posteriormente, se modelaron los dos casos requeridos: un servidor y dos servidores. Por motivos didácticos, únicamente se muestra el caso para dos servidores; para el caso de un servidor la solución es análoga y puede consultarse en el apéndice el código.  Las variables utilizadas son las siguientes: 
+
+\begin{align*}
+	T^e_n &= \text{Tiempo entre llegadas}\\
+	A_n &= \text{Tiempo de llegada}\\
+	T^c_n &= \text{Tiempo comienzo de servicio}\\
+	T^w_n &= \text{Tiempo de espera}\\
+	S_n &= \text{Tiempo de servicio}\\
+	D_n &= \text{Tiempo de completación}\\
+	T^s_n &= \text{Tiempo en el sistema}\\
+	C^1_n &= \text{Caja 1}\\
+	C^2_n &= \text{Caja 2}
+\end{align*}
+
+Por otra parte, las ecuaciones planteadas son las siguientes: 
+
+\begin{align}
+	A_1&= T^e_1 =T^c_1 \\
+	C^1_1&=D_1\\
+	C^2_1&=0
+\end{align}
+
+\begin{align}
+	A_n= A_{n-1}+T^e_n, n>1
+\end{align}
+\begin{align}
+	T^e_n= \begin{cases}
+		\min\{C^1_{n-1}, C^2_{n-2}\}, & A_n \leq \min\{C^1_{n-1}, C^2_{n-1}\}\\
+		A_n, & A_n > \min\{C^1_{n-1}, C^2_{n-1}\}\\
+	\end{cases},  n>1 
+\end{align}
+
+\begin{align}
+	T^w_n = T_n-A_n, n\geq 1
+\end{align}
+
+\begin{align}
+	D_n = T^c_n+S_n, n\geq 1
+\end{align}
+
+\begin{align}
+	T^s_n = D_n - A_n, n\geq 1 
+\end{align}
+
+\begin{align}
+	C^1_n = \begin{cases}
+		D_n, & C^1_{n-1}= \min\{C^1_{n-1},C^2_{n-1}\} \\
+		 C^1_{n-1},& C^1_{n-1}\neq \min\{C^1_{n-1},C^2_{n-1}\}
+	\end{cases},  n>1
+\end{align}
+
+\begin{align}
+	C^2_n = \begin{cases}
+		D_n, & C^2_{n-1}= \min\{C^1_{n-1},C^2_{n-1}\} \\
+		C^2_{n-1},& C^2_{n-1}\neq \min\{C^1_{n-1},C^2_{n-1}\}
+	\end{cases}, n>1
+\end{align}
+
+De dichas ecuaciones se genera un \textit{dataframe} que proporciona los tiempos de salida requeridos para los primeros dos casos. 
+
+\subsection{Problema 1.c}
+
+Análogamente, para el caso $c$ únicamente es necesario repetir el procedimiento del inciso anterior modificado esta única línea de código. 
+\begin{lstlisting}[language=Python, caption=Caso c]
+	tiempo_entre_llegada= caso_c 
+\end{lstlisting}
+
+
+\subsection{Problema 2.a, 2.b y 2.c }
+
+Las ecuaciones correspondientes se determinaron a partir de la generalización del caso de un único servidor dado para $D_0=0$ y para $n>0$ tal que 
+\begin{align}
+	D_n-S_n=\max\{A_n,D_{n-1}\}
+\end{align}
+
+\section{Resultados}
+\section{Conclusiones y discusión}
+
+\begin{enumerate}
+	\item a
+	\item a
+	\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a
+\end{enumerate}
+\subsection{Subsection Heading Here}
+
+
+
+
+\subsubsection{Subsubsection Heading Here}
+
+\section{Conclusion}
+
+
+
+
+
+
+\appendices
+\section{Proof of the First Zonklar Equation}
+
+
+
+
+
+\section*{Agradecimientos y Reconocimientos}
+
+
+
+
+
+
+
+\bibliographystyle{plain} % We choose the &quot;plain&quot; reference style
+\bibliography{refs.bib} 
+
+\end{document}
+
+
