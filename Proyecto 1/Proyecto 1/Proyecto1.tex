@@ -70,25 +70,23 @@ La resolución de esta parte se llevó a cabo totalmente en \textit{Python}. El 
 \begin{lstlisting}[language=Python, label={code:1}, caption=Tiempos de llegada y de servicio.]
 	ensayos = 13
 	tiempo_de_llegadas = [12,31,63,95,99,154,198,221,304,346,411,455,537]
-	tiempo_de_servicio = [40,32,55,48,18,50,47,18,28,54,40,72,12]
+	tiempo_de_servicio_a_b = [40,32,55,48,18,50,47,18,28,54,40,72,12]
 \end{lstlisting}
 
 Ahora bien, nótese que los tiempos de llegada de \cref{code:1} presentan los tiempos ya ordenados. Sin embargo, el algoritmo desarrollado exige que únicamente se den los tiempos entre llegadas en bruto. Las distribuciones que pueden ser utilizadas en el algoritmo pueden ser encontradas en \cite{wackerly2014mathematical}. A continuación se presenta el algoritmo para quitarles el orden a los tiempos de llegada. 
 \begin{lstlisting}[language=Python,label={code:2}, caption=Casos tiempos de llegada]
-	# Casos 
 	caso_a_b= [tiempo_de_llegadas[0]]
-	caso_c = []
+	
 	for i in range(1,len(tiempo_de_llegadas)):
 		elemento =  tiempo_de_llegadas[i] - tiempo_de_llegadas[i-1] 
 		caso_a_b.append(elemento)
-		caso_c.append(elemento)
-	caso_c.sort(reverse=False)
-	caso_c.insert(0,tiempo_de_llegadas[0])
+	
 \end{lstlisting}
 
-Para modelar el primero de los casos, únicamente se asigna la variable para los tiempos entre llegadas. 
+El código está basado para modelar cualquier tipo de distribución, por lo tanto, para este caso únicamente es necesario modificar estas dos varibles. 
 \begin{lstlisting}[language=Python, label={code:3}, caption=Caso a y Caso b]
-	tiempo_entre_llegada= caso_a_b
+	tiempo_entre_llegada = caso_a_b
+	tiempo_de_servicio = tiempo_de_servicio_a_b 
 \end{lstlisting}
 
 Posteriormente, se modelaron los dos casos requeridos: un servidor y dos servidores. Por motivos didácticos, únicamente se muestra el caso para dos servidores; para el caso de un servidor la solución es análoga y puede consultarse en el apéndice el código.  Las variables utilizadas son las siguientes: 
@@ -153,11 +151,7 @@ De dichas ecuaciones se genera un \textit{dataframe} que proporciona los tiempos
 
 \subsection{Problema 1.c}
 
-Análogamente, para el caso $c$ únicamente es necesario repetir el procedimiento del inciso anterior modificado esta única línea de código. 
-\begin{lstlisting}[language=Python, caption=Caso c]
-	tiempo_entre_llegada= caso_c 
-\end{lstlisting}
-
+Análogamente, para el caso $c$ únicamente es necesario repetir el procedimiento del inciso anterior modificado el código para adaptarse a una línea de espera con modalidad \textit{LIFO} (último en entrar y primero en salir, por sus siglas en inglés); la parte teórica se puede encontrar ampliamente en la literatura \cite{ross2013simulation}. En el caso particular del proyecto, este inciso únicamente requirió realizar la simulación manualmente. 
 
 \subsection{Problema 2.a, 2.b y 2.c }
 
@@ -165,37 +159,88 @@ Las ecuaciones correspondientes se determinaron a partir de la generalización d
 \begin{align}
 	D_n-S_n=\max\{A_n,D_{n-1}\}
 \end{align}
-
+La demostración práctica para el caso de $k=1$ puede ser fácilmente deducida con una hoja de cálculo; mientras que para la generalización $k>1$ simplemente es necesario hacer una modificación al segundo término de la expresión del $\max$. Se ofrecen comprobaciones de los casos $k=1$ y $k=2$ en este \href{https://github.com/RudiksChess/UVG-ModelacionYSimulacion-Notas-6-Semestre/tree/main/Proyecto\%201}{repositorio}; de donde se demuestra intuitivamente el caso general. 
 \section{Resultados}
+\subsection{Problemas 1.a, 1.b, 1.c y 2.d}
+Los tiempos de finalización para los distintos tipos de arreglos pueden ser observados en el \cref{tab:tiemposFIN}.
+\begin{table}
+	\centering
+	\caption{Tiempos de finalización}
+	\label{tab:tiemposFIN}
+	\begin{tabular}{ccc}
+		\hline
+		Problema 1.a & Problema 1.b & Problema 1.c \\ \hline
+		52           & 52           & 52           \\
+		84           & 63           & 84           \\
+		139          & 118          & 139          \\
+		187          & 143          & 157          \\
+		205          & 136          & 207          \\
+		255          & 204          & 254          \\
+		302          & 245          & 272          \\
+		320          & 239          & 320          \\
+		348          & 332          & 348          \\
+		402          & 400          & 402          \\
+		451          & 451          & 451          \\
+		527          & 527          & 527          \\
+		549          & 549          & 549          \\ \hline
+	\end{tabular}
+\end{table}
+
+\subsection{Problemas 1.a, 1.b, 1.c y 2.d}
+
+Se determinó que el caso con un único servidor ($k=1$) sí se cumple dado $D_0=0$ y para $n>0$ tal que 
+\begin{align}
+	D_n-S_n =\max\{A_n,D_{n-1}\}
+\end{align}
+
+Mientras que para dos servidores ($k=2$) se cumple para $D_0=D_{-1}=0$ y para $n>2$ tal que 
+\begin{align}
+	D_n-S_n=\max\{A_n,\min\{D_{n-1},D_{n-2}\}\}
+\end{align}
+
+Finalmente, el caso general puede ser expresado para $k$ servidores, en donde se cumple si $D_0=D_1=\cdots= D_{-(k-1)}=0$ tal que, 
+ \begin{align}
+ 	D_n-S_n=\max\{A_n,\min\{D_{n-1},D_{n-2},\cdots, D_{n-k}\}\} \label{ec:1}
+ \end{align}
+
 \section{Conclusiones y discusión}
 
-\begin{enumerate}
-	\item a
-	\item a
-	\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a\item a
+La resolución de los problemas propuestos se analizaron desde las perspectivas teóricas y prácticas. La metodología usada se basó en: (1) Creación de algoritmos de simulación. (2) Determinación y comprobación de las ecuaciones a través de la experimentación directa con un servidor y con dos servidores independientes. El desarrollo del proyecto consistió en el uso de un lenguaje de programación (\textit{python}) y un programa de hojas de cálculo (\textit{excel}). Finalmente, en el proyecto se comprobó y se determinó una ecuación que puede ser generalizada a $k$ servidores en una línea de espera. 
+\bigbreak
+
+Se comprobó dos modelos de líneas de espera que se enfocan en sus contrapartes teóricas: \textit{LIFO} (último en entrar y primero en salir) y \textit{FIFO} (primero en entrar y primero en salir). Naturalmente, el modelo \textit{FIFO} \cite{ross2013simulation} representa el modelo usual que se usa en todo tipo de línea de espera en la vida diaria, mientras que el modelo \textit{LIFO} está relegado a otro tipo de aplicaciones más complejas. Se determinó, véase \cref{tab:tiemposFIN}, que no hay distinción en el uso de modelos \textit{LIFO} y \textit{FIFO} ni el uso de uno o dos servidores; ya que todos hicieron un uso de 549 unidades de espera. Esto podría estar directamente relacionado a las distribuciones específicas que se dieron; que no representan probabilidades aleatorias sino distribuciones arbitrariamente dadas. Por otra parte, se determinó una propiedad en la función mínimo de la \cref{ec:1} la cual hace uso necesario de la propiedad $D_0=D_1=\cdots= D_{-(k-1)}=0$ para que dicha función no presente ninguna incongruencia. 
+
+Finalmente, para futuras investigaciones se recomienda asignar distribuciones de probabilidades aleatorias para una mejor representación del uso de 1 o más cajeros; además se podría intentar investigar nuevas propiedades y ecuaciones que puedan ser útiles para generalizar nuevos resultados en las líneas de espera. 
+
+Se concluye \begin{enumerate}
+	\item Se determinó que las líneas de espera se constituyen principalmente basados en el modelo \textit{FIFO} que son las más justas y efectivas para ordenar dichas líneas. 
+	\item Se observó que las distribuciones de probabilidad aleatorias pueden representar una forma más efectiva para poner a prueba los modelos de simulación de varios cajeros. 
+	\item Se investigó diferentes modelos de simulación en donde no es necesario caer a la simulación directamente para las líneas de espera; ya existen modelos teóricos que calculan probabilidades, cantidades y otros aspectos con un par de simples fórmulas. 
 \end{enumerate}
-\subsection{Subsection Heading Here}
-
-
-
-
-\subsubsection{Subsubsection Heading Here}
-
-\section{Conclusion}
 
 
 
 
 
 
-\appendices
-\section{Proof of the First Zonklar Equation}
+\section*{Apéndices}
+\subsection{Código utilizado}
+En este
+\href{https://github.com/RudiksChess/UVG-ModelacionYSimulacion-Notas-6-Semestre/tree/main/Proyecto\%201}{repositorio}.
+
+\subsection{Hojas de cálculo}
+
+En este \href{https://github.com/RudiksChess/UVG-ModelacionYSimulacion-Notas-6-Semestre/tree/main/Proyecto\%201}{repositorio}.
 
 
 
 
 
-\section*{Agradecimientos y Reconocimientos}
+
+
+
+
+
 
 
 
